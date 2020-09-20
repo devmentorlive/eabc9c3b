@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import './styles.css';
 
 export default function App() {
   const [value, setValue] = useState('');
   const [focused, setFocused] = useState(false);
+  const ref = useRef(null);
 
   return (
     <div
@@ -11,8 +12,9 @@ export default function App() {
         value.length > 0 ? 'has-value' : ''
       }`}>
       <div className='control'>
-        <label>Label</label>
+        <label onClick={() => ref.current.focus()}>Name</label>
         <input
+          ref={ref}
           type='text'
           value={value}
           onChange={(e) => setValue(e.target.value)}
