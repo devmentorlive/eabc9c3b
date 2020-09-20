@@ -1,25 +1,66 @@
 import React, { useState } from 'react';
+import TextField from './text-field';
 import './styles.css';
 
+function isRequired(val) {
+  return val.length > 0 ? '' : 'cannot be blank';
+}
+
+function isEmail(val) {
+  const ai = val.indexOf('@');
+  const gdi = val
+    .split('')
+    .reduce((acc, char, i) => (char === '.' ? i : acc), 0);
+  return ai > -1 && gdi > ai ? '' : 'must be an email';
+}
+
+const defaultValues = {
+  name: '',
+  email: '',
+};
+
+const defaultErrors = {
+  name: [],
+  email: [],
+};
+
 export default function App() {
-  const [value, setValue] = useState('');
-  const [focused, setFocused] = useState(false);
+  const [values, setValues] = useState(defaultValues);
+  const [errors, setErrors] = useState(defaultErrors);
 
   return (
-    <div
-      className={`form-field ${focused ? 'is-focused' : ''} ${
-        value.length > 0 ? 'has-value' : ''
-      }`}>
-      <div className='control'>
-        <label>Label</label>
-        <input
-          type='text'
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-        />
-      </div>
+    <div className='container'>
+      <TextField
+        label='Name'
+        name='name'
+        value={values.name}
+        onChange={(val) => {
+          const name = val;
+          setValues((prev) => ({
+            ...prev,
+            name,
+          }));
+        }}
+        validations={[isRequired]}
+        errors={errors.name}
+        setErrors={setErrors}
+      />
+
+      <TextField
+        label='Email'
+        name='email'
+        value={values.email}
+        onChange={(val) => {
+          const email = val;
+          setValues((prev) => ({
+            ...prev,
+            email,
+          }));
+        }}
+        validations={[isRequired, isEmail]}
+        errors={errors.email}
+        setErrors={setErrors}
+      />
     </div>
   );
 }
