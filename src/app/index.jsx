@@ -1,10 +1,31 @@
 import React, { useState, useRef } from 'react';
 import './styles.css';
 
+function isRequired(val) {
+  return val.length > 0 ? '' : 'cannot be blank';
+}
+
+function isEmail(val) {
+  const ai = val.indexOf('@');
+  const dis = val.split('').reduce((acc, char, i) => {
+    return char === '.' ? i : acc;
+  }, -1);
+  return ai > -1 && dis > ai ? '' : 'must be a valid email';
+}
+
 export default function App() {
   const [value, setValue] = useState('');
+  const [errors, setErrors] = useState([]);
   const [focused, setFocused] = useState(false);
   const ref = useRef(null);
+
+  function validate(validations) {
+    setErrors(
+      validations
+        .map((errorsFor) => errorsFor(value))
+        .filter((err) => err.length > 0),
+    );
+  }
 
   return (
     <div
@@ -19,9 +40,15 @@ export default function App() {
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
+          onBlur={() => {
+            validate([isRequired, isEmail]);
+            setFocused(false);
+          }}
         />
       </div>
+      {errors.length > 0 ? (
+        <div className='has-error'>{errors.join(', ')}</div>
+      ) : null}
     </div>
   );
 }
